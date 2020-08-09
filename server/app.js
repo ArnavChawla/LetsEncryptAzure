@@ -13,7 +13,7 @@ app.use("/js",express.static("./src/js"));
 app.use("/images",express.static("./src/images"));
 app.use("/fonts",express.static("./src/fonts"));
 app.use("/scss",express.static("./src/scss"));
-const port = 8000;
+const port = 3000;
 const checkTime = 1000;
 var ls = null;
 function check() {
