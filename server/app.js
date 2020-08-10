@@ -75,6 +75,7 @@ app.get('/generate/:tagId', function(req, res) {
 });
 app.get('/confirm/:tagId',function(req,res)
 {
+    var generated = false;
     ls.stdin.write('\n');
     ls.stdout.on("data", data => {
     console.log(`stdout: ${data}`);
@@ -89,6 +90,8 @@ app.get('/confirm/:tagId',function(req,res)
       test += temp.split("at:")[1].split(" Y")[0].trim()
       test += temp.split("at:")[2].split(" Y")[0].trim()
     //  res.send(`${test}`); 
+    if (generated == false){
+    generated = true;
     var output = file_system.createWriteStream(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`);
     var archive = archiver('zip');
     
@@ -97,6 +100,7 @@ app.get('/confirm/:tagId',function(req,res)
         console.log('archiver has been finalized and the output file descriptor has closed.');
         console.log(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`)
         res.sendFile(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`);
+        res.end();
     });
     
     archive.on('error', function(err){
@@ -108,6 +112,7 @@ app.get('/confirm/:tagId',function(req,res)
     // append files from a sub-directory and naming it `new-subdir` within the archive (see docs for more options):
     archive.directory(`/etc/letsencrypt/archive/${req.params.tagId}/`, false);
     archive.finalize();
+  }
 
   }
   });
