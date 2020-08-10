@@ -5,7 +5,7 @@ var sudo = require('sudo-prompt');
 var path = require('path');
 var file_system = require('fs');
 var archiver = require('archiver');
-
+var generated = false;
 
 const app = express();
 app.use("/css",express.static("./src/css"));
@@ -21,6 +21,7 @@ app.get("/", (req, res) => {
     res.sendFile('index.html',{ root: "./src" });
 });
 app.get('/generate/:tagId', function(req, res) {
+    generated = false;
     var options = {
         name: 'Electron'
       };
@@ -73,7 +74,7 @@ app.get('/generate/:tagId', function(req, res) {
     });
     
 });
-var generated = false;
+
 app.get('/confirm/:tagId',function(req,res)
 {
   if (generated == false){
