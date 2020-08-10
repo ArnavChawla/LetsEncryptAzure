@@ -3,7 +3,7 @@ const { spawn } = require("child_process");
 const shell = require('shelljs');
 var sudo = require('sudo-prompt');
 var path = require('path');
-var fs = require('fs');
+var file_system = require('fs');
 var archiver = require('archiver');
 
 
