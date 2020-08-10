@@ -38,7 +38,7 @@ app.get('/generate/:tagId', function(req, res) {
         test += temp.split("at:")[1].split(" Y")[0].trim()
         test += temp.split("at:")[2].split(" Y")[0].trim()
       //  res.send(`${test}`); 
-      var output = file_system.createWriteStream(`${req.params.tagId}.zip`);
+      var output = file_system.createWriteStream(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`);
       var archive = archiver('zip');
       
       output.on('close', function () {
@@ -55,7 +55,8 @@ app.get('/generate/:tagId', function(req, res) {
       // append files from a sub-directory and naming it `new-subdir` within the archive (see docs for more options):
       archive.directory(`/etc/letsencrypt/archive/${req.params.tagId}/`, false);
       archive.finalize();
-      res.download(`${req.params.tagId}.zip`)
+      console.log(__dirname.split('/server')[0]+`/zips/${req.params.tagId}`)
+      res.sendFile(__dirname.split('/server')[0]+`/zips/${req.params.tagId}`);
     }
     });
   
@@ -88,7 +89,7 @@ app.get('/confirm/:tagId',function(req,res)
       test += temp.split("at:")[1].split(" Y")[0].trim()
       test += temp.split("at:")[2].split(" Y")[0].trim()
     //  res.send(`${test}`); 
-    var output = file_system.createWriteStream(`${req.params.tagId}.zip`);
+    var output = file_system.createWriteStream(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`);
     var archive = archiver('zip');
     
     output.on('close', function () {
@@ -105,7 +106,8 @@ app.get('/confirm/:tagId',function(req,res)
     // append files from a sub-directory and naming it `new-subdir` within the archive (see docs for more options):
     archive.directory(`/etc/letsencrypt/archive/${req.params.tagId}/`, false);
     archive.finalize();
-    res.download(`${req.params.tagId}.zip`)
+    console.log(__dirname.split('/server')[0]+`/zips/${req.params.tagId}`)
+    res.sendFile(__dirname.split('/server')[0]+`/zips/${req.params.tagId}`);
   }
   });
 
@@ -120,6 +122,10 @@ app.get('/confirm/:tagId',function(req,res)
   ls.on("close", code => {
       console.log(`child process exited with code ${code}`);
   });
+});
+app.get('/download/:tagId', function(req,res){
+  console.log(__dirname.split('/server')[0]+`/zips/${req.params.tagId}`)
+  res.sendFile(__dirname.split('/server')[0]+`/zips/${req.params.tagId}`);
 });
 app.listen(port, function() {
     console.log(`Server listening on port ${port}`);
