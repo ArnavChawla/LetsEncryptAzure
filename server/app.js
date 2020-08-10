@@ -16,21 +16,7 @@ app.use("/scss",express.static("./src/scss"));
 const port = 3000;
 const checkTime = 1000;
 var ls = null;
-function check() {
-   setTimeout(() => {
-       fs.readFile('/Users/arnavchawla/Desktop/dns-info.txt', 'utf8', function(err, data) {
-          if (err) {
-              // got error reading the file, call check() again
-              check();
-          } else {
-              // we have the file contents here, so do something with it
-              // can delete the source file too
-          }
-       });
-   }, checkTime)
-}
 
-check();
 app.get("/", (req, res) => {
     res.sendFile('index.html',{ root: "./src" });
 });
@@ -38,11 +24,11 @@ app.get('/generate/:tagId', function(req, res) {
     var options = {
         name: 'Electron'
       };
-    ls = spawn(`certbot`,['certonly',`-d ${req.params.tagId}`,'--manual','--manual-public-ip-logging-ok','--preferred-challenges=http']);
+    ls = spawn(`certbot`,['certonly',`-d ${req.params.tagId}`,'--manual','--manual-public-ip-logging-ok','--preferred-challenges=dns']);
     ls.stdout.on("data", data => {
       console.log(`stdout: ${data}`);
       if (data.includes("Press Enter to Continue")){
-       // res.send(`${data}`);
+        res.send(`${data}`);
         console.log("true");
       }
       else if(data.includes("Congratulations")){
@@ -51,26 +37,26 @@ app.get('/generate/:tagId', function(req, res) {
         console.log(temp);
         test += temp.split("at:")[1].split(" Y")[0].trim()
         test += temp.split("at:")[2].split(" Y")[0].trim()
-      //  res.send(`${test}`);
-        var output = fs.createWriteStream(`./${req.params.tagId}.zip`);
-        var archive = archiver('zip', {
-            gzip: true,
-            zlib: { level: 9 } 
-        });
-        
-        archive.on('error', function(err) {
+      //  res.send(`${test}`); 
+      var output = file_system.createWriteStream(`/zips/${req.params.tagId}.zip`);
+      var archive = archiver('zip');
+      
+      output.on('close', function () {
+          console.log(archive.pointer() + ' total bytes');
+          console.log('archiver has been finalized and the output file descriptor has closed.');
+      });
+      
+      archive.on('error', function(err){
           throw err;
-        });
-        
-        archive.pipe(output);
-        
-        // append files
-        archive.file(`${temp.split("at:")[1].split(" Y")[0].trim()}`, {name:'first.pem'});
-        archive.file(`${temp.split("at:")[2].split(" Y")[0].trim()}`, {name:'second.pem'});
-        archive.finalize();
-        const file = `./${req.params.tagId}.zip`;
-        res.download(file);
-      }
+      });
+      
+      archive.pipe(output);
+      
+      // append files from a sub-directory and naming it `new-subdir` within the archive (see docs for more options):
+      archive.directory(`/etc/letsencrypt/archive/${req.params.tagId}/`, false);
+      archive.finalize();
+      res.download(`./zips/${req.params.tagId}.zip`)
+    }
     });
   
     ls.stderr.on("data", data => {
@@ -83,32 +69,57 @@ app.get('/generate/:tagId', function(req, res) {
     
     ls.on("close", code => {
         console.log(`child process exited with code ${code}`);
-    })
+    });
     
 });
 app.get('/confirm',function(req,res)
 {
     ls.stdin.write('\n');
     ls.stdout.on("data", data => {
-        const temp = `${data}`;
-        var test = "";
-        console.log(temp);
-        test += temp.split("at:")[1].split(" Y")[0]
-        test += temp.split("at:")[2].split(" Y")[0]
-        res.send(`${data}`);
-      });
+    console.log(`stdout: ${data}`);
+    if (data.includes("Press Enter to Continue")){
+      res.send(`${data}`);
+      console.log("true");
+    }
+    else if(data.includes("Congratulations")){
+      const temp = `${data}`;
+      var test = "";
+      console.log(temp);
+      test += temp.split("at:")[1].split(" Y")[0].trim()
+      test += temp.split("at:")[2].split(" Y")[0].trim()
+    //  res.send(`${test}`); 
+    var output = file_system.createWriteStream(`/zips/${req.params.tagId}.zip`);
+    var archive = archiver('zip');
     
-    ls.stderr.on("data", data => {
-        console.log(`stderr: ${data}`);
+    output.on('close', function () {
+        console.log(archive.pointer() + ' total bytes');
+        console.log('archiver has been finalized and the output file descriptor has closed.');
     });
     
-    ls.on('error', (error) => {
-        console.log(`error: ${error.message}`);
+    archive.on('error', function(err){
+        throw err;
     });
     
-    ls.on("close", code => {
-        console.log(`child process exited with code ${code}`);
-    })
+    archive.pipe(output);
+    
+    // append files from a sub-directory and naming it `new-subdir` within the archive (see docs for more options):
+    archive.directory(`/etc/letsencrypt/archive/${req.params.tagId}/`, false);
+    archive.finalize();
+    res.download(`./zips/${req.params.tagId}.zip`)
+  }
+  });
+
+  ls.stderr.on("data", data => {
+      console.log(`stderr: ${data}`);
+  });
+  
+  ls.on('error', (error) => {
+      console.log(`error: ${error.message}`);
+  });
+  
+  ls.on("close", code => {
+      console.log(`child process exited with code ${code}`);
+  });
 });
 app.listen(port, function() {
     console.log(`Server listening on port ${port}`);
