@@ -73,9 +73,10 @@ app.get('/generate/:tagId', function(req, res) {
     });
     
 });
+var generated = false;
 app.get('/confirm/:tagId',function(req,res)
 {
-    var generated = false;
+    
     ls.stdin.write('\n');
     ls.stdout.on("data", data => {
     console.log(`stdout: ${data}`);
@@ -91,7 +92,7 @@ app.get('/confirm/:tagId',function(req,res)
       test += temp.split("at:")[2].split(" Y")[0].trim()
     //  res.send(`${test}`); 
     if (generated == false){
-    generated = true;
+      generated = true;
     var output = file_system.createWriteStream(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`);
     var archive = archiver('zip');
     
