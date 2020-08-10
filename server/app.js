@@ -76,7 +76,8 @@ app.get('/generate/:tagId', function(req, res) {
 var generated = false;
 app.get('/confirm/:tagId',function(req,res)
 {
-    
+  if (generated == false){
+    generated = true;
     ls.stdin.write('\n');
     ls.stdout.on("data", data => {
     console.log(`stdout: ${data}`);
@@ -91,8 +92,8 @@ app.get('/confirm/:tagId',function(req,res)
       test += temp.split("at:")[1].split(" Y")[0].trim()
       test += temp.split("at:")[2].split(" Y")[0].trim()
     //  res.send(`${test}`); 
-    if (generated == false){
-      generated = true;
+    
+    
     var output = file_system.createWriteStream(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`);
     var archive = archiver('zip');
     
@@ -115,7 +116,6 @@ app.get('/confirm/:tagId',function(req,res)
     archive.finalize();
   }
 
-  }
   });
 
   ls.stderr.on("data", data => {
@@ -129,6 +129,7 @@ app.get('/confirm/:tagId',function(req,res)
   ls.on("close", code => {
       console.log(`child process exited with code ${code}`);
   });
+}
 });
 app.get('/download/:tagId', function(req,res){
   console.log(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`)
