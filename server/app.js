@@ -72,7 +72,7 @@ app.get('/generate/:tagId', function(req, res) {
     });
     
 });
-app.get('/confirm',function(req,res)
+app.get('/confirm/:tagId',function(req,res)
 {
     ls.stdin.write('\n');
     ls.stdout.on("data", data => {
