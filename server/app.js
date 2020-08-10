@@ -44,8 +44,8 @@ app.get('/generate/:tagId', function(req, res) {
       output.on('close', function () {
           console.log(archive.pointer() + ' total bytes');
           console.log('archiver has been finalized and the output file descriptor has closed.');
-          console.log(__dirname.split('/server')[0]+`/zips/${req.params.tagId}`)
-          res.sendFile(__dirname.split('/server')[0]+`/zips/${req.params.tagId}`);
+          console.log(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`)
+          res.sendFile(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`);
       });
       
       archive.on('error', function(err){
@@ -95,8 +95,8 @@ app.get('/confirm/:tagId',function(req,res)
     output.on('close', function () {
         console.log(archive.pointer() + ' total bytes');
         console.log('archiver has been finalized and the output file descriptor has closed.');
-        console.log(__dirname.split('/server')[0]+`/zips/${req.params.tagId}`)
-        res.sendFile(__dirname.split('/server')[0]+`/zips/${req.params.tagId}`);
+        console.log(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`)
+        res.sendFile(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`);
     });
     
     archive.on('error', function(err){
@@ -125,8 +125,8 @@ app.get('/confirm/:tagId',function(req,res)
   });
 });
 app.get('/download/:tagId', function(req,res){
-  console.log(__dirname.split('/server')[0]+`/zips/${req.params.tagId}`)
-  res.sendFile(__dirname.split('/server')[0]+`/zips/${req.params.tagId}`);
+  console.log(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`)
+  res.sendFile(__dirname.split('/server')[0]+`/zips/${req.params.tagId}.zip`);
   
 });
 app.listen(port, function() {
