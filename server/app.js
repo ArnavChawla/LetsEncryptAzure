@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
     res.sendFile('index.html',{ root: "./src" });
 });
 app.get('/generate/:tagId', function(req, res) {
-    ls = spawn(__dirname.split("server")[0]+`acme.sh/acme.sh`,['--issue' , '--debug','-d', `${req.params.tagId}`,'--dns','--yes-I-know-dns-manual-mode-enough-go-ahead-please']);
+    ls = spawn('~/.acme.sh/acme.sh',['--issue' , '--debug','-d', `${req.params.tagId}`,'--dns','--yes-I-know-dns-manual-mode-enough-go-ahead-please']);
     ls.stdout.on("data", data => {
       console.log(`stdout: ${data}`);
       res.write(`${data}`);
@@ -45,7 +45,7 @@ app.get('/generate/:tagId', function(req, res) {
 app.get('/confirm/:tagId',function(req,res)
 {
     var generated = false
-    ls = spawn(__dirname.split("server")[0]+`acme.sh/acme.sh`,['--renew' , '--debug','-d', `${req.params.tagId}`,'--yes-I-know-dns-manual-mode-enough-go-ahead-please']);
+    ls = spawn('~/.acme.sh/acme.sh',['--renew' , '--debug','-d', `${req.params.tagId}`,'--yes-I-know-dns-manual-mode-enough-go-ahead-please']);
     ls.stdout.on("data", data => {
         console.log(`stdout: ${data}`);
         if (`${data}`.toLowerCase().includes("success"))
@@ -83,7 +83,7 @@ app.get('/confirm/:tagId',function(req,res)
             archive.pipe(output);
 
             // append files from a sub-directory and naming it `new-subdir` within the archive (see docs for more options):
-            archive.directory(`/Users/arnavchawla/.acme.sh/${req.params.tagId}`, false);
+            archive.directory(`~/.acme.sh/${req.params.tagId}`, false);
             archive.finalize();
         }
         
