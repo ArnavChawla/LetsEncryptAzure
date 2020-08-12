@@ -3,3 +3,5 @@
 src/.DS_Store
 .DS_Store
 /zips/*.zip
+/.acme.sh
+/acme.sh
