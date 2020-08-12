@@ -13,7 +13,7 @@ app.use("/js",express.static("./src/js"));
 app.use("/images",express.static("./src/images"));
 app.use("/fonts",express.static("./src/fonts"));
 app.use("/scss",express.static("./src/scss"));
-const port = 8000;
+const port = 3000;
 const checkTime = 1000;
 var ls = null;
 
@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
     res.sendFile('index.html',{ root: "./src" });
 });
 app.get('/generate/:tagId', function(req, res) {
-    ls = spawn(`/Users/arnavchawla/acme.sh`,['--issue' , '--debug','-d', `${req.params.tagId}`,'--dns','--yes-I-know-dns-manual-mode-enough-go-ahead-please']);
+    ls = spawn(`acme.sh`,['--issue' , '--debug','-d', `${req.params.tagId}`,'--dns','--yes-I-know-dns-manual-mode-enough-go-ahead-please']);
     ls.stdout.on("data", data => {
       console.log(`stdout: ${data}`);
       res.write(`${data}`);
@@ -45,7 +45,7 @@ app.get('/generate/:tagId', function(req, res) {
 app.get('/confirm/:tagId',function(req,res)
 {
     var generated = false
-    ls = spawn(`/Users/arnavchawla/acme.sh`,['--renew' , '--debug','-d', `${req.params.tagId}`,'--yes-I-know-dns-manual-mode-enough-go-ahead-please']);
+    ls = spawn(`acme.sh`,['--renew' , '--debug','-d', `${req.params.tagId}`,'--yes-I-know-dns-manual-mode-enough-go-ahead-please']);
     ls.stdout.on("data", data => {
         console.log(`stdout: ${data}`);
         if (`${data}`.toLowerCase().includes("success"))
