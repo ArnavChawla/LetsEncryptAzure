@@ -1,0 +1,7 @@
+web:
+    build: .
+    command: node server/app.js
+    restart: always
+    ports:
+      - "80:3000"
+      - "3000:3000"
