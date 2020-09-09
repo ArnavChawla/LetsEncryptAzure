@@ -8,6 +8,7 @@ var archiver = require('archiver');
 var generated = false;
 
 const app = express();
+app.use("/xml", express.static("./xml"));
 app.use("/css",express.static("./src/css"));
 app.use("/js",express.static("./src/js"));
 app.use("/images",express.static("./src/images"));
